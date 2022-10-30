@@ -1,0 +1,17 @@
+engineered_features:
+  type: pandas.ParquetDataSet
+  filepath: s3://sunspots/data/04_feature/engineered_features.parquet
+  credentials: dev_s3
+  layer: Feature
+
+fit_engineer_features.scaler:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/04_feature/scaler.pickle
+  credentials: dev_s3
+  layer: Feature
+
+feature_engineering.scaler:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/04_feature/scaler.pickle
+  credentials: dev_s3
+  # layer: Feature

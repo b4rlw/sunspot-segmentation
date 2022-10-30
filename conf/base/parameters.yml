@@ -1,0 +1,19 @@
+box_size: 64
+
+split_options:
+  target: "label"
+  test_size: 0.2
+
+modelling:
+  resample_options:
+    mode: "undersample"
+    ratio: 0.1
+
+features:
+  - coord_radius
+  - mean
+  - standard_deviation
+  - range
+  # - fourier_mean
+  - fourier_standard_deviation
+  # - fourier_range

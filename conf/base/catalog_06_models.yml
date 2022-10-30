@@ -1,0 +1,11 @@
+model:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/06_models/svm_model.pickle
+  credentials: dev_s3
+  layer: Models
+
+target_prediction.model:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/06_models/svm_model.pickle
+  credentials: dev_s3
+  # layer: Models

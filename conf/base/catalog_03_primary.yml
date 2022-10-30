@@ -1,0 +1,11 @@
+image_chunk_features:
+  type: pandas.ParquetDataSet
+  filepath: s3://sunspots/data/03_primary/image_chunk_features.parquet
+  credentials: dev_s3
+  layer: Primary
+
+image_chunk_labels:
+  type: pandas.ParquetDataSet
+  filepath: s3://sunspots/data/03_primary/image_chunk_labels.parquet
+  credentials: dev_s3
+  layer: Primary

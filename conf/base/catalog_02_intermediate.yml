@@ -1,0 +1,5 @@
+sunspot_selector:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/02_intermediate/SunspotSelector.pickle
+  credentials: dev_s3
+  layer: Raw
