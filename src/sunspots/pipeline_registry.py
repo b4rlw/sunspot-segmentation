@@ -1,5 +1,7 @@
 """Project pipelines."""
 import re
+import yaml
+from yaml.loader import SafeLoader
 from typing import Dict
 from kedro.pipeline import Pipeline, pipeline
 from sunspots.pipelines.training_pipeline import pipeline as tp
@@ -21,17 +23,18 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "execution_pipeline": execution_pipeline,
     }
 
-    datasets = ["20140910Timeseries", "20150910Timeseries"]
+    with open("conf/base/parameters.yml") as f:
+        datasets = yaml.load(f, Loader=SafeLoader)["datasets"]
 
-    exe_pipes = {}
-    for dataset in datasets:
+    execution_pipes = {}
+    for dataset in datasets.keys():
         start_date = re.findall("(\d+)", dataset)[0]
-        exe_pipes[f"{start_date}_execution"] = pipeline(
+        execution_pipes[f"{start_date}_execution"] = pipeline(
             pipe=ep.create_pipeline(),
-            inputs={"Timeseries": dataset},
+            inputs={"timeseries": f"{start_date}Timeseries"},
             outputs={
-                "region_submaps": f"{start_date}_region_submaps",
                 "targets": f"{start_date}_targets",
+                "region_submaps": f"{start_date}_region_submaps",
             },
         )
-    return pipelines | exe_pipes
+    return pipelines | execution_pipes

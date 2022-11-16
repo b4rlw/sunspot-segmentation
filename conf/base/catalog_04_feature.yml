@@ -14,4 +14,4 @@ feature_engineering.scaler:
   type: pickle.PickleDataSet
   filepath: s3://sunspots/data/04_feature/scaler.pickle
   credentials: dev_s3
-  # layer: Feature
+  layer: Feature

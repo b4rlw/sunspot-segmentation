@@ -18,7 +18,7 @@ def create_pipeline() -> Pipeline:
     """
     data_ingestion_pipeline = pipeline(
         pipe=di.create_pipeline(),
-        inputs={"dataset": "Timeseries"},
+        inputs={"dataset": "timeseries"},
         outputs={"dataset_chunk_features": "chunk_features"},
         parameters={"params:override_me": "params:box_size"},
         namespace="data_ingestion",
@@ -39,7 +39,7 @@ def create_pipeline() -> Pipeline:
     )
     region_extraction_pipeline = pipeline(
         pipe=re.create_pipeline(),
-        inputs={"dataset": "Timeseries", "targets": "targets"},
+        inputs={"dataset": "timeseries", "targets": "targets"},
         outputs={"region_submaps": "region_submaps"},
         parameters={"params:override_me": "params:box_size"},
         namespace="region_extraction",

@@ -3,3 +3,12 @@
 #
 # Documentation for this file format can be found in "Parameters"
 # Link: https://kedro.readthedocs.io/en/0.18.3/kedro_project_setup/configuration.html#parameters
+
+features:
+  - coord_radius
+  - mean
+  - standard_deviation
+  - range
+  # - fourier_mean
+  - fourier_standard_deviation
+  # - fourier_range
