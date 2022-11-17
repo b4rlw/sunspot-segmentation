@@ -43,7 +43,7 @@ class ProjectHooks:
         self.catalog.add(
             data_set_name=name,
             data_set=PickleDataSet(
-                filepath=f"s3://sunspots/data/{folder}/{name}",
+                filepath=f"s3://sunspots/data/{folder}/{name}.pickle",
                 credentials=self._get_credentials("dev_s3"),
             ),
             replace=True,
