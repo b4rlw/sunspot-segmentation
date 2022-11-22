@@ -1,3 +1,7 @@
+"""
+Module housing the SunspotInspector class used for visually verifying model
+predictions.
+"""
 from typing import Optional
 from IPython import display
 import matplotlib.pyplot as plt
