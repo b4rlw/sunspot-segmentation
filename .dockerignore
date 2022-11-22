@@ -9,7 +9,7 @@ Dockerfile
 # conf/**/*credentials*
 
 # ignore all local configuration
-conf/local
+# conf/local
 !conf/local/.gitkeep
 
 # ignore everything in the following folders
