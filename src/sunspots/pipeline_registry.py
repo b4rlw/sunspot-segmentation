@@ -35,6 +35,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
             outputs={
                 "targets": f"{start_date}_targets",
                 "region_submaps": f"{start_date}_region_submaps",
+                "segmentations": f"{start_date}_segmentations",
+                "segmentation_masks": f"{start_date}_segmentation_masks",
+                "region_dataframes": f"{start_date}_region_dataframes",
             },
         )
     return pipelines | execution_pipes
