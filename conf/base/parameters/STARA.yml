@@ -1,0 +1,11 @@
+# This is a boilerplate parameters config generated for pipeline 'STARA'
+# using Kedro 0.18.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://kedro.readthedocs.io/en/0.18.3/kedro_project_setup/configuration.html#parameters
+
+stara:
+  circle_radius: 75  # arcsecs
+  median_box: 15  # arcsecs
+  threshold: 6000  ## pixel_intensity
+  limb_filter: 10  ## percent of solar radii
