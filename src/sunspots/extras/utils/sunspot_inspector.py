@@ -9,52 +9,7 @@ from matplotlib import patches
 from ipywidgets import widgets
 import numpy as np
 from scipy import ndimage
-
-
-def select_region(
-    labels: np.ndarray, index: int, box_size: int, contour_size: Optional[int] = None
-) -> tuple[int, int]:
-    """
-    Return the bottom left and top right corners of the
-    bounding box of a labelled image region, optionally
-    contouring around the box to "fuzzily" include
-    features on the edge.
-
-    Parameters
-    ----------
-    labels : np.ndarray
-        The integer labelled mask (produced by e.g. scipy.ndimage.label).
-    index : int
-        The labelled region to extract.
-    box_size : int
-        The size of the boxes used to define the regions.
-    contour_size : Optional[int]
-        The size to add onto each side of the region when defining
-        the bounding box. Default: boxSize // 2.
-
-    Returns
-    -------
-    bottom_left, top_right : Tuple[int, int]
-        The pixel coordinates of the corners of the selected region.
-    """
-    if contour_size is None:
-        contour_size = box_size // 2
-
-    coords = np.argwhere(labels == index)
-    min_x = np.min(coords[:, 1])
-    max_x = np.max(coords[:, 1])
-    min_y = np.min(coords[:, 0])
-    max_y = np.max(coords[:, 0])
-
-    bottom_left = (
-        (max_x + 1) * box_size + contour_size // 2,
-        (max_y + 1) * box_size + contour_size // 2,
-    )
-    top_right = (
-        min_x * box_size - contour_size // 2,
-        min_y * box_size - contour_size // 2,
-    )
-    return bottom_left, top_right
+from sunspots.pipelines.region_extraction.nodes import select_region
 
 
 def overplot_rect_from_coords(
