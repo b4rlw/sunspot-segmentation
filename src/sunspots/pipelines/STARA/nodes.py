@@ -210,7 +210,9 @@ def process_extraction(
     return segmentation, segmentation_mask, region_dataframe
 
 
-def process_extractions(region_submaps: dict[str, Callable], stara_params: dict):
+def process_extractions(
+    region_submaps: dict[str, Callable], stara_params: dict
+) -> tuple[dict, dict, dict]:
     segmentations = {}
     segmentation_masks = {}
     region_dataframes = {}
