@@ -1,5 +1,6 @@
 FROM python:3.10-bullseye
 
+# need to install cv2 dependencies at system level when using pip
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
