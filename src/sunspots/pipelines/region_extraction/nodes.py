@@ -2,13 +2,15 @@
 This is a boilerplate pipeline 'region_extraction'
 generated using Kedro 0.18.3
 """
-from typing import Callable
+from typing import Callable, Optional
 import numpy as np
 from scipy import ndimage
 from sunpy.map import Map
 
 
-def _select_region(labels, index, box_size, contour_size=None):
+def select_region(
+    labels: np.ndarray, index: int, box_size: int, contour_size: Optional[int] = None
+) -> tuple[int, int]:
     """
     Return the bottom left and top right corners of the
     bounding box of a labelled image region, optionally
@@ -29,7 +31,7 @@ def _select_region(labels, index, box_size, contour_size=None):
 
     Returns
     -------
-    bottomLeft, topRight : Tuple[int, int]
+    bottom_left, top_right : Tuple[int, int]
         The pixel coordinates of the corners of the selected region.
     """
     if contour_size is None:
@@ -61,12 +63,14 @@ def get_region_coords(dataset: dict[str, Callable], targets: np.ndarray, box_siz
         region_coords[key] = []
         labeled_array, num_features = ndimage.label(mask)
         for index in range(1, num_features + 1):
-            bounding_coords = _select_region(labeled_array, index, box_size)
+            bounding_coords = select_region(labeled_array, index, box_size)
             region_coords[key].append(bounding_coords)
     return region_coords
 
 
-def _extract_region(smap, bottomLeft, topRight):
+def extract_region(
+    smap: Map, bottom_left: tuple[int, int], top_right: tuple[int, int]
+) -> Map:
     """
     Extract a submap from the provided pixel coordinates
     (obtained from select_region).
@@ -75,9 +79,9 @@ def _extract_region(smap, bottomLeft, topRight):
     ----------
     smap : sunpy.map.Map
         The HMI map.
-    bottomLeft : Tuple[int, int]
+    bottom_left : tuple[int, int]
         The bottom left pixel coordinate pair.
-    topRight : Tuple[int, int]
+    top_right : tuple[int, int]
         The top right pixel coordinate pair.
 
     Returns
@@ -85,8 +89,8 @@ def _extract_region(smap, bottomLeft, topRight):
     submap : sunpy.map.Map
         The submap of the selected region.
     """
-    bl = smap.wcs.pixel_to_world(*bottomLeft)
-    tr = smap.wcs.pixel_to_world(*topRight)
+    bl = smap.wcs.pixel_to_world(*bottom_left)
+    tr = smap.wcs.pixel_to_world(*top_right)
     return smap.submap(bottom_left=bl, top_right=tr)
 
 
@@ -101,6 +105,6 @@ def extract_regions(
     for (key, smap), coords in zip(dataset.items(), list(region_coords.values())):
         for coord in coords:
             bottom_left, top_right = coord
-            region_submap = _extract_region(smap(), bottom_left, top_right)
+            region_submap = extract_region(smap(), bottom_left, top_right)
             extractions[f"{key}_{bottom_left}_{top_right}"] = region_submap
     return extractions
