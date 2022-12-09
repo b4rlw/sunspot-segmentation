@@ -45,7 +45,7 @@ def create_pipeline() -> Pipeline:
         inputs={"model", "engineered_features"},
         outputs={"training_targets"},
         parameters={"params:override_me": "params:box_size"},
-        namespace="prediction",
+        namespace="target_prediction",
     )
     helper_pipe = pipeline(
         [
