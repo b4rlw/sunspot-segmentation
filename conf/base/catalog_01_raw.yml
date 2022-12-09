@@ -9,14 +9,8 @@ training_dataset:
   filename_suffix: ".fits"
   layer: Raw
 
-# 20140910Timeseries:
-#   type: PartitionedDataSet
-#   path: s3://sunspots/data/01_raw/20140910Timeseries
-#   credentials: dev_s3
-#   dataset: 
-#     type: sunspots.extras.datasets.sunpy_datasets.SunPyMapDataSet
-#     save_args:
-#       overwrite: True
-#   filename_suffix: ".fits"
-#   layer: Raw
-
+sunspot_selector:
+  type: pickle.PickleDataSet
+  filepath: s3://sunspots/data/02_intermediate/SunspotSelector.pickle
+  credentials: dev_s3
+  layer: Raw

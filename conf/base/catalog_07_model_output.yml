@@ -3,20 +3,3 @@ training_targets:
   filepath: s3://sunspots/data/07_model_output/training_targets.pickle
   credentials: dev_s3
   layer: Model Output
-
-# 20140910_targets:
-#   type: pickle.PickleDataSet
-#   filepath: s3://sunspots/data/07_model_output/20140910_targets.pickle
-#   credentials: dev_s3
-#   layer: Model Output
-
-# 20140910_region_submaps:
-#   type: PartitionedDataSet
-#   path: s3://sunspots/data/07_model_output/20140910Timeseries
-#   credentials: dev_s3
-#   dataset:
-#     type: sunspots.extras.datasets.sunpy_datasets.SunPyMapDataSet
-#     save_args:
-#       overwrite: True
-#   filename_suffix: ".fits"
-#   layer: Model Output
