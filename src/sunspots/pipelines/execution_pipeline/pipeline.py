@@ -3,7 +3,7 @@ This is a boilerplate pipeline 'execution_pipeline'
 generated using Kedro 0.18.3
 """
 
-from kedro.pipeline import Pipeline, node, pipeline
+from kedro.pipeline import Pipeline, pipeline
 
 from sunspots.pipelines.data_ingestion import pipeline as di
 from sunspots.pipelines.feature_engineering import pipeline as fe
@@ -20,13 +20,13 @@ def create_pipeline() -> Pipeline:
     data_ingestion_pipeline = pipeline(
         pipe=di.create_pipeline(),
         inputs={"dataset": "timeseries"},
-        outputs={"dataset_chunk_features": "chunk_features"},
+        outputs={"image_patch_features": "patch_features"},
         parameters={"params:override_me": "params:box_size"},
         namespace="data_ingestion",
     )
     feature_engineering_pipeline = pipeline(
         pipe=fe.create_pipeline(),
-        inputs={"image_chunk_features": "chunk_features"},
+        inputs={"image_patch_features": "patch_features"},
         outputs={"engineered_features": "engineered_features"},
         parameters={"params:features"},
         namespace="feature_engineering",

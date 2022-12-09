@@ -13,7 +13,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=generate_feature_table,
                 inputs=["dataset", "params:override_me"],
-                outputs="dataset_chunk_features",
+                outputs="image_patch_features",
                 name="generate_feature_table",
             ),
         ]

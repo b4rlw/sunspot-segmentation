@@ -28,11 +28,11 @@ def _extract_labels(
 
 def generate_label_table(selector: SunspotSelector, box_size: int) -> pd.DataFrame:
     """
-    Returns a pandas dataframe of chunk labels across an entire dataset of SunPy
+    Returns a pandas dataframe of patch labels across an entire dataset of SunPy
     maps.
     """
     label_dict = dict(zip(selector.keys, selector.box_coords_all))
-    chunk_labels = list(_extract_labels(label_dict, box_size))
-    label_df = pd.DataFrame.from_records(chunk_labels)
+    patch_labels = list(_extract_labels(label_dict, box_size))
+    label_df = pd.DataFrame.from_records(patch_labels)
     label_df["label"] = label_df["label"].astype(int)
     return label_df

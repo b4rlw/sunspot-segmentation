@@ -13,7 +13,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=generate_label_table,
                 inputs=["sunspot_selector", "params:override_me"],
-                outputs="image_chunk_labels",
+                outputs="image_patch_labels",
                 name="generate_label_table",
             ),
         ]

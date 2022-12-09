@@ -25,14 +25,14 @@ def create_pipeline() -> Pipeline:
     ingestion_pipeline = pipeline(
         pipe=di.create_pipeline(),
         inputs={"dataset": "training_dataset"},
-        outputs={"dataset_chunk_features": "image_chunk_features"},
+        outputs={"image_patch_features"},
         parameters={"params:override_me": "params:box_size"},
         namespace="data_ingestion",
     )
     labels_pipeline = pipeline(
         pipe=le.create_pipeline(),
         inputs={"sunspot_selector"},
-        outputs={"image_chunk_labels"},
+        outputs={"image_patch_labels"},
         parameters={"params:override_me": "params:box_size"},
         namespace="label_extraction",
     )
@@ -51,7 +51,7 @@ def create_pipeline() -> Pipeline:
         [
             node(
                 func=create_master_table,
-                inputs=["engineered_features", "image_chunk_labels"],
+                inputs=["engineered_features", "image_patch_labels"],
                 outputs="master_table",
                 name="create_master_table",
             ),

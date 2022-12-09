@@ -17,7 +17,7 @@ def create_fit_pipeline() -> Pipeline:
         [
             node(
                 func=select_features,
-                inputs=["image_chunk_features", "params:features"],
+                inputs=["image_patch_features", "params:features"],
                 outputs="chosen_features",
                 name="select_features",
             ),
@@ -37,7 +37,7 @@ def create_fit_pipeline() -> Pipeline:
     )
     return pipeline(
         pipe=fit_engineer_features_pipeline,
-        inputs={"image_chunk_features"},
+        inputs={"image_patch_features"},
         outputs={"engineered_features"},
         parameters={"params:features"},
         namespace="fit_engineer_features",
@@ -54,7 +54,7 @@ def create_pipeline() -> Pipeline:
         [
             node(
                 func=select_features,
-                inputs=["image_chunk_features", "params:features"],
+                inputs=["image_patch_features", "params:features"],
                 outputs="chosen_features",
                 name="select_features",
             ),
