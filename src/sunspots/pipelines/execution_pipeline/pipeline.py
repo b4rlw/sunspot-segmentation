@@ -34,7 +34,7 @@ def create_pipeline() -> Pipeline:
     prediction_pipeline = pipeline(
         pipe=pr.create_pipeline(),
         inputs={"engineered_features": "engineered_features"},
-        outputs={"training_targets": "targets"},
+        outputs={"targets"},
         parameters={"params:override_me": "params:box_size"},
         namespace="target_prediction",
     )

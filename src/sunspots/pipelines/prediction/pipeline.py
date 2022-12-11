@@ -13,7 +13,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=predict_dataset_targets,
                 inputs=["model", "engineered_features", "params:override_me"],
-                outputs="training_targets",
+                outputs="targets",
                 name="predict_dataset_targets",
             ),
         ]
