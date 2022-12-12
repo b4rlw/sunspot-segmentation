@@ -7,7 +7,7 @@ from kedro.pipeline import Pipeline, pipeline
 
 from sunspots.pipelines.data_ingestion import pipeline as di
 from sunspots.pipelines.feature_engineering import pipeline as fe
-from sunspots.pipelines.prediction import pipeline as pr
+from sunspots.pipelines.target_prediction import pipeline as tp
 from sunspots.pipelines.region_extraction import pipeline as re
 from sunspots.pipelines.STARA import pipeline as st
 
@@ -32,7 +32,7 @@ def create_pipeline() -> Pipeline:
         namespace="feature_engineering",
     )
     prediction_pipeline = pipeline(
-        pipe=pr.create_pipeline(),
+        pipe=tp.create_pipeline(),
         inputs={"engineered_features": "engineered_features"},
         outputs={"targets"},
         parameters={"params:override_me": "params:box_size"},
