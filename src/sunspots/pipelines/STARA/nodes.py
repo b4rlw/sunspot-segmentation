@@ -2,7 +2,7 @@
 This is a boilerplate pipeline 'STARA'
 generated using Kedro 0.18.3
 """
-from typing import Callable
+from typing import Callable, Optional
 import astropy.units as u
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ from sunpy.map import Map
 
 
 @njit(parallel=False)
-def erode_core(image, pad_image, s_element):
+def _erode_core(image, pad_image, s_element):
     pad_width = s_element.shape[0] // 2
     out = np.zeros_like(image)
     if pad_width % 2 == 0:
@@ -39,7 +39,7 @@ def erode_core(image, pad_image, s_element):
     return out
 
 
-def erode(image, s_element):
+def _erode(image, s_element):
     """
     Morphologically erode image with structure element.
     """
@@ -50,11 +50,11 @@ def erode(image, s_element):
     pad_s_element[pad_y:, pad_x:] = s_element
     pad_width = pad_s_element.shape[0] // 2
     pad_image = np.pad(image, pad_width, mode="reflect")
-    return erode_core(image, pad_image, pad_s_element)
+    return _erode_core(image, pad_image, pad_s_element)
 
 
 @njit(parallel=False)
-def dilate_core(image, pad_image, s_element):
+def _dilate_core(image, pad_image, s_element):
     pad_width = s_element.shape[0] // 2
     out = np.zeros_like(image)
     if pad_width % 2 == 0:
@@ -74,7 +74,7 @@ def dilate_core(image, pad_image, s_element):
     return out
 
 
-def dilate(image, s_element):
+def _dilate(image, s_element):
     """
     Morphologically dilate image with structure element.
     """
@@ -85,10 +85,10 @@ def dilate(image, s_element):
     pad_element[pad_y:, pad_x:] = s_element
     pad_width = pad_element.shape[0] // 2
     pad_image = np.pad(image, pad_width, mode="reflect")
-    return dilate_core(image, pad_image, pad_element)
+    return _dilate_core(image, pad_image, pad_element)
 
 
-def opening(image: np.ndarray, s_element: np.ndarray):
+def _opening(image: np.ndarray, s_element: np.ndarray):
     """
     Morphological opening.
 
@@ -104,10 +104,10 @@ def opening(image: np.ndarray, s_element: np.ndarray):
     result : np.ndarray
         The morphological opening of the image by the structure element.
     """
-    return dilate(erode(image, s_element), s_element)
+    return _dilate(_erode(image, s_element), s_element)
 
 
-def white_tophat(image: np.ndarray, s_element: np.ndarray):
+def _white_tophat(image: np.ndarray, s_element: np.ndarray):
     """
     Morphological white tophat filter.
 
@@ -123,25 +123,19 @@ def white_tophat(image: np.ndarray, s_element: np.ndarray):
     result : np.ndarray
         The white tophat filtered image, i.e. image - opening(image, s_element).
     """
-    return image - opening(image, s_element)
+    return image - _opening(image, s_element)
 
 
 @u.quantity_input
-def stara(
-    smap,
-    circle_radius: u.deg = 100 * u.arcsec,
-    median_box: u.deg = 10 * u.arcsec,
-    threshold=6000,
-    limb_filter: u.percent = None,
-):
+def _stara(smap: Map, stara_params: dict) -> np.ndarray:
     """
     A method for automatically detecting sunspots in white-light data using
     morphological operations.
 
-    Parameters
-    ----------
-    smap : `sunpy.map.GenericMap`
+    smap : `sunpy.map.Map`
         The map to apply the algorithm to.
+    stara_params
+    ----------
     circle_radius : `astropy.units.Quantity`, optional
         The angular size of the structuring element used in the
         `skimage.morphology.white_tophat`. This is the maximum radius of
@@ -157,6 +151,10 @@ def stara(
         radius of the disk. A value of 10% generally filters out false
         detections around the limb with HMI continuum images.
     """
+    circle_radius = stara_params["circle_radius"] * u.arcsec
+    median_box = stara_params["median_box"] * u.arcsec
+    threshold = stara_params["threshold"]
+    limb_filter = stara_params["limb_filter"] * u.percent
     data = invert(smap.data)
     # Filter things that are close to limb to reduce false detections
     if limb_filter is not None:
@@ -171,14 +169,20 @@ def stara(
     # Construct the pixel structuring element
     c_pix = int(np.round((circle_radius / smap.scale[0]).to_value(u.pix)))
     circle = disk(c_pix // 2)
-    finite = white_tophat(med, circle)
+    finite = _white_tophat(med, circle)
     finite[np.isnan(finite)] = 0  # Filter out nans
     return finite > threshold
 
 
-def get_regions(
-    segmentation, smap, properties=("label", "centroid", "area", "min_intensity")
-):
+def _get_segmentation_mask(segmentation: np.ndarray) -> np.ndarray:
+    return ndimage.label(segmentation)
+
+
+def _get_region_dataframe(
+    segmentation: np.ndarray,
+    smap: Map,
+    properties: Optional[tuple] = ("label", "centroid", "area", "min_intensity"),
+) -> pd.DataFrame:
     labelled = label(segmentation)
     if labelled.max() == 0:
         return QTable()
@@ -187,44 +191,39 @@ def get_regions(
     regions["center_coord"] = smap.pixel_to_world(
         regions["centroid-0"] * u.pix, regions["centroid-1"] * u.pix
     ).heliographic_stonyhurst
-    return QTable(regions)
+    return QTable(regions).to_pandas()
 
 
-def process_extraction(
-    region_submap: Map, stara_params: dict
-) -> tuple[np.ndarray, np.ndarray, pd.DataFrame]:
-    circle_radius = stara_params["circle_radius"] * u.arcsec
-    median_box = stara_params["median_box"] * u.arcsec
-    threshold = stara_params["threshold"]
-    limb_filter = stara_params["limb_filter"] * u.percent
-    segmentation = stara(
-        region_submap, circle_radius, median_box, threshold, limb_filter
-    )
-    segmentation_mask, _ = ndimage.label(segmentation)
-    region_table = get_regions(
-        segmentation,
-        region_submap,
-        properties=["label", "centroid", "area", "min_intensity"],
-    )
-    region_dataframe = region_table.to_pandas()
-    return segmentation, segmentation_mask, region_dataframe
-
-
-def process_extractions(
+def stara_process_regions(
     region_submaps: dict[str, Callable], stara_params: dict
-) -> tuple[dict, dict, dict]:
+) -> dict[str, np.ndarray]:
     segmentations = {}
-    segmentation_masks = {}
-    region_dataframes = {}
     for key, value in region_submaps.items():
         region_submap = value()
-        segmentation, segmentation_mask, region_dataframe = process_extraction(
-            region_submap, stara_params
-        )
+        segmentation = _stara(region_submap, stara_params)
         segmentations[f"{key}_segmentation"] = segmentation
+    return segmentations
+
+
+def get_segmentation_masks(segmentations: dict[str, Callable]) -> dict[str, np.ndarray]:
+    segmentation_masks = {}
+    for key, value in segmentations.items():
+        segmentation = value()
+        segmentation_mask = _get_segmentation_mask(segmentation)
         segmentation_masks[f"{key}_segmentation_mask"] = segmentation_mask
+    return segmentation_masks
+
+
+def get_region_dataframes(
+    segmentations: dict[str, Callable], region_submaps: dict[str, Callable]
+) -> dict[str, pd.DataFrame]:
+    region_dataframes = {}
+    for key, smap, segment in zip(region_submaps.items(), segmentations.values()):
+        region_submap = smap()
+        segmentation = segment()
+        region_dataframe = _get_region_dataframe(segmentation, region_submap)
         region_dataframes[f"{key}_region_dataframe"] = region_dataframe
-    return segmentations, segmentation_masks, region_dataframes
+    return region_dataframes
 
 
 # set_num_threads(16)
