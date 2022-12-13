@@ -8,11 +8,11 @@ from .nodes import get_region_coords, extract_regions
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
+    region_extraction_pipeline = pipeline(
         [
             node(
                 func=get_region_coords,
-                inputs=["dataset", "targets", "params:override_me"],
+                inputs=["dataset", "targets", "params:box_size"],
                 outputs="region_coords",
                 name="get_region_coords",
             ),
@@ -23,4 +23,11 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="extract_regions",
             ),
         ]
+    )
+    return pipeline(
+        pipe=region_extraction_pipeline,
+        inputs={"dataset": "timeseries", "targets": "targets"},
+        outputs={"region_submaps"},
+        parameters={"params:box_size"},
+        namespace="region_extraction",
     )
