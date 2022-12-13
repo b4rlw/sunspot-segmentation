@@ -31,31 +31,19 @@ def create_pipeline() -> Pipeline:
         parameters={"params:features"},
         namespace="feature_engineering",
     )
-    prediction_pipeline = pipeline(
+    target_prediction_pipeline = pipeline(
         pipe=tp.create_pipeline(),
         inputs={"engineered_features": "engineered_features"},
         outputs={"targets"},
         parameters={"params:override_me": "params:box_size"},
         namespace="target_prediction",
     )
-    region_extraction_pipeline = pipeline(
-        pipe=re.create_pipeline(),
-        inputs={"dataset": "timeseries", "targets": "targets"},
-        outputs={"region_submaps": "region_submaps"},
-        parameters={"params:override_me": "params:box_size"},
-        namespace="region_extraction",
-    )
-    stara_analysis_pipeline = pipeline(
-        pipe=st.create_pipeline(),
-        inputs={"region_submaps"},
-        outputs={"segmentations", "segmentation_masks", "region_dataframes"},
-        parameters={"params:override_me": "params:stara"},
-        namespace="STARA",
-    )
+    region_extraction_pipeline = re.create_pipeline()
+    stara_analysis_pipeline = st.create_pipeline()
     return (
         data_ingestion_pipeline
         + feature_engineering_pipeline
-        + prediction_pipeline
+        + target_prediction_pipeline
         + region_extraction_pipeline
         + stara_analysis_pipeline
     )
