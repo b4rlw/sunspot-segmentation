@@ -1,4 +1,4 @@
-# Sunspots
+# Sunspot Segmentation
 ## Overview
 The Solar Dynamics Observatory (SDO) is equipped with the Helioseismic and Magnetic Imager (HMI) instrument, which measures the intensity of the Sun in the region of the Fe I spectral line at 6173Å on the solar surface. More information [here](http://jsoc.stanford.edu/HMI/Continuum.html).
 
