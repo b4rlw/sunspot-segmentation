@@ -28,12 +28,8 @@ Designed to be used with the `matplotlib` widget backend inside a Jupyter notebo
 A class designed to overplot target predictions on their corresponding Map as a visual verifiction that the model is functioning correctly.
 Designed to be used with the `matplotlib` widget backend inside a Jupyter notebook.
 
-<!-- 
-The HMI continuum data used to for this project can be obtained through the SunPy API.
--->
+![predictions and regions](./src/sunspots/extras/utils/predictions_regions.png)
 
-<!-- Data obtained from SunPy API
--->
 ### Pipelines
 #### Training Pipeline
 
