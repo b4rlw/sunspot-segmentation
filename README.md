@@ -1,4 +1,5 @@
 # Sunspot Segmentation
+
 ## Overview
 The Solar Dynamics Observatory (SDO) is equipped with the Helioseismic and Magnetic Imager (HMI) instrument, which measures the intensity of the Sun in the region of the Fe I spectral line at 6173Å on the solar surface. More information [here](http://jsoc.stanford.edu/HMI/Continuum.html).
 
@@ -51,6 +52,8 @@ The execution pipeline uses the trained SVM to classify SunPy Map patches based 
 Contigous regions of activity are then extracted and saved as sub-Maps, before being analysed by the STARA algorithm.
 
 ![Execution Pipeline](./src/sunspots/pipelines/execution_pipeline/execution_pipeline.png)
+
+![segmentation](./src/sunspots/pipelines/STARA/segmentation.png)
 
 Run an execution pipeline using the date determined by the SunPy API when your dataset downloads. For example, for `20140910Timeseries`:
 ```
